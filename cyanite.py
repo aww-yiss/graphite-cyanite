@@ -10,6 +10,11 @@ except ImportError:
 
 import requests
 
+# Global config vars
+urls = None
+urllength = 4096
+tenant = None
+
 
 def chunk(nodelist, length):
     chunklist = []
@@ -48,8 +53,6 @@ class URLs(object):
     @property
     def metrics(self):
         return '{0}/metrics'.format(self.host)
-urls = None
-urllength = 8000
 
 
 class CyaniteReader(object):
@@ -60,6 +63,7 @@ class CyaniteReader(object):
 
     def fetch(self, start_time, end_time):
         data = requests.get(urls.metrics, params={'path': self.path,
+                                                  'tenant': tenant,
                                                   'from': start_time,
                                                   'to': end_time}).json()
         if 'error' in data:
@@ -80,6 +84,7 @@ class CyaniteFinder(object):
     def __init__(self, config=None):
         global urls
         global urllength
+        global tenant
         if config is not None:
             if 'urls' in config['cyanite']:
                 urls = config['cyanite']['urls']
@@ -87,17 +92,21 @@ class CyaniteFinder(object):
                 urls = [config['cyanite']['url'].strip('/')]
             if 'urllength' in config['cyanite']:
                 urllength = config['cyanite']['urllength']
+            if 'tenant' in config['cyanite']:
+                tenant = config['cyanite']['tenant']
         else:
             from django.conf import settings
             urls = getattr(settings, 'CYANITE_URLS')
             if not urls:
                 urls = [settings.CYANITE_URL]
             urllength = getattr(settings, 'CYANITE_URL_LENGTH', urllength)
+            tenant = getattr(settings, 'TENANT', tenant)
         urls = URLs(urls)
 
     def find_nodes(self, query):
         paths = requests.get(urls.paths,
-                             params={'query': query.pattern}).json()
+                             params={'query': query.pattern,
+                                     'tenant': tenant}).json()
         for path in paths:
             if path['leaf']:
                 yield CyaniteLeafNode(path['path'],
@@ -112,6 +121,7 @@ class CyaniteFinder(object):
         for pathlist in chunk(paths, urllength):
             tmpdata = requests.get(urls.metrics,
                                    params={'path': pathlist,
+                                           'tenant': tenant,
                                            'from': start_time,
                                            'to': end_time}).json()
             if 'error' in tmpdata:

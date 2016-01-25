@@ -69,6 +69,27 @@ See `pyr/cyanite`_ for running the Cyanite carbon daemon.
 
 .. _pyr/cyanite: https://github.com/pyr/cyanite
 
+Optional config settings
+------------------------
+
+Additional settings are available for the maximum ``urllenth`` and setting a
+``tenant`` value for compatibiliy with the `disthene-reader`_ project.
+
+    # Graphite-API
+    cyanite:
+      urllength: 4096
+      tenant: 'None'
+    
+    # Graphite-web
+    CYANITE_URLLENGTH = (
+        '4096'
+    )
+    TENANT = (
+        'None'
+    )
+
+.. _disthene-reader: https://github.com/EinsamHauer/disthene-reader
+
 Changelog
 ---------
 
