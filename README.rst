@@ -75,11 +75,13 @@ Optional config settings
 Additional settings are available for the maximum ``urllenth`` and setting a
 ``tenant`` value for compatibiliy with the `disthene-reader`_ project.
 
+.. _disthene-reader: https://github.com/EinsamHauer/disthene-reader
+
     # Graphite-API
     cyanite:
       urllength: 4096
       tenant: 'None'
-    
+
     # Graphite-web
     CYANITE_URLLENGTH = (
         '4096'
@@ -87,8 +89,6 @@ Additional settings are available for the maximum ``urllenth`` and setting a
     TENANT = (
         'None'
     )
-
-.. _disthene-reader: https://github.com/EinsamHauer/disthene-reader
 
 Changelog
 ---------
